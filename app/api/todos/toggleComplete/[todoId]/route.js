@@ -11,7 +11,8 @@ export async function PATCH(req, { params }) {
     const cookieMonster = await cookies();
     const refreshToken = cookieMonster.get("refreshToken")?.value;
     const { isCompleted } = await req.json();
-    const todoId = params.todoId 
+    const todoId = (await params).todoId
+    console.log(todoId);
 
     const isValidId = mongoose.Types.ObjectId.isValid(todoId);
     if (!isValidId) {
@@ -19,14 +20,20 @@ export async function PATCH(req, { params }) {
     }
 
     if (!refreshToken) throw new ApiError(401, "User is not logged in");
+    const user = await User.findOne({ refreshToken });
+    if (!user) throw new ApiError(404, "User not found");
 
     const todo = await Todo.findById(todoId);
+    console.log(todo);
+    console.log(user);
+
+    console.log(user._id, todo.owner);
+
     if (!todo) throw new ApiError(404, "Couldn't find todo");
+    if (!(todo.owner.equals(user._id))) throw new ApiError(401, "Unauthorized access")
 
     todo.isCompleted = isCompleted;
     await todo.save();
-    const user = await User.findOne({ refreshToken });
-    if (!user) throw new ApiError(404, "User not found");
 
     return NextResponse.json({
         status: 200,

@@ -24,15 +24,15 @@ async function generateAccessAndRefreshTokens(id) {
 
 export async function POST(req) {
     await connectDB();
-    const { email, username, password } = await req.json();
+    const { usernameOrEmail, password } = await req.json();
     // console.log(email, username);
 
-    if (!email && !username) {
+    if (!usernameOrEmail) {
         throw new ApiError(400, "Username or Email is required");
     }
 
     const user = await User.findOne({
-        $or: [{ email }, { username }],
+        $or: [{email: usernameOrEmail}, {username: usernameOrEmail}]
     });
 
     if (!user) {

@@ -6,7 +6,7 @@ import { User } from "@/app/models/User.model";
 import { cookies } from "next/headers";
 import mongoose from "mongoose";
 
-export async function DELETE(req, { params }) {
+export async function DELETE(_, { params }) {
     try {
         await connectDB();
         const refreshToken = (await cookies()).get("refreshToken")?.value;
@@ -15,7 +15,9 @@ export async function DELETE(req, { params }) {
         if (!mongoose.Types.ObjectId.isValid(id))
             throw new ApiError(400, "Invalid ObjectId");
 
-        await Todo.deleteOne({ _id: id });
+        const deleteMeth = await Todo.deleteOne({ _id: id });
+        
+        if (deleteMeth.deletedCount === 0) throw new ApiError(404, "Todo not found")
 
         const user = await User.findOne({ refreshToken });
         if (!user) throw new ApiError(404, "User not found");
