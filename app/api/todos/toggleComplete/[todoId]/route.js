@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import connectDB from "@/app/lib/mongodb";
+import connectDB from "@/components/lib/mongodb";
 import { Todo } from "@/app/models/Todo.model";
 import { User } from "@/app/models/User.model";
 import { ApiError } from "@/app/utils/ApiError";
@@ -12,7 +12,6 @@ export async function PATCH(req, { params }) {
     const refreshToken = cookieMonster.get("refreshToken")?.value;
     const { isCompleted } = await req.json();
     const todoId = (await params).todoId
-    console.log(todoId);
 
     const isValidId = mongoose.Types.ObjectId.isValid(todoId);
     if (!isValidId) {
@@ -24,10 +23,6 @@ export async function PATCH(req, { params }) {
     if (!user) throw new ApiError(404, "User not found");
 
     const todo = await Todo.findById(todoId);
-    console.log(todo);
-    console.log(user);
-
-    console.log(user._id, todo.owner);
 
     if (!todo) throw new ApiError(404, "Couldn't find todo");
     if (!(todo.owner.equals(user._id))) throw new ApiError(401, "Unauthorized access")

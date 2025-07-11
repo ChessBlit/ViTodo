@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import connectDB from "@/app/lib/mongodb";
+import connectDB from "@/components/lib/mongodb";
 import { User } from "@/app/models/User.model";
 import { ApiError } from "@/app/utils/ApiError";
 

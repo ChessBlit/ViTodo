@@ -1,4 +1,4 @@
-import connectDB from "@/app/lib/mongodb";
+import connectDB from "@/components/lib/mongodb";
 import { NextResponse } from "next/server";
 import { Todo } from "@/app/models/Todo.model";
 import { ApiError } from "@/app/utils/ApiError";
@@ -16,7 +16,7 @@ export async function POST(req) {
     
     if (!refreshToken) throw new ApiError(401, "User is not Logged in");
     
-    const checkContent = TodoSchema.safeParse(content)
+    const checkContent = TodoSchema.safeParse({content})
 
     if (!checkContent.success) throw new ApiError(400, treeifyError(checkContent.error))
 

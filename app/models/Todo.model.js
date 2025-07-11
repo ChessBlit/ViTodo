@@ -12,12 +12,14 @@ const TodoSchema = new Schema(
         owner: {
             type: Schema.Types.ObjectId,
             ref: "User",
-            required: true
+            required: true,
+            index: true
         },
         isCompleted: {
             type: Boolean,
             required: true,
-            default: false
+            default: false,
+            index: true
         }
     },
     { timestamps: true }

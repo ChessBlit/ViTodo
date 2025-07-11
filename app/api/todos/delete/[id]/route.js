@@ -1,4 +1,4 @@
-import connectDB from "@/app/lib/mongodb";
+import connectDB from "@/components/lib/mongodb";
 import { Todo } from "@/app/models/Todo.model";
 import { NextResponse } from "next/server";
 import { ApiError } from "@/app/utils/ApiError";

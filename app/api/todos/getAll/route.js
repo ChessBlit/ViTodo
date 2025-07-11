@@ -1,4 +1,4 @@
-import connectDB from "@/app/lib/mongodb";
+import connectDB from "@/components/lib/mongodb";
 import { NextResponse } from "next/server";
 import { ApiError } from "@/app/utils/ApiError";
 import { User } from "@/app/models/User.model";
@@ -15,6 +15,7 @@ export async function POST() {
     const user = await User.findOne({
         refreshToken,
     });
+    
 
     const todoIds = await user.todos;
 
@@ -24,7 +25,6 @@ export async function POST() {
         })
     );
 
-    console.log(todos);
 
     return NextResponse.json({
         status: 200,

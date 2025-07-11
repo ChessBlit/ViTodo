@@ -1,4 +1,4 @@
-import connectDB from "@/app/lib/mongodb";
+import connectDB from "@/components/lib/mongodb";
 import { NextResponse } from "next/server";
 import { ApiError } from "@/app/utils/ApiError";
 import { cookies } from "next/headers";
@@ -17,7 +17,6 @@ export async function DELETE(_, { params }) {
     const user = await User.findOne({
         refreshToken
     })
-    console.log(user?.password);
     if (user?.password !== password) throw new ApiError(401, "The password doenst match the user's password")
 
     if (!user) throw new ApiError(404, "User not found")
