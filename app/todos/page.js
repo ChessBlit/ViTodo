@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Checkbox } from "@/components/ui/checkbox"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { TodoSchema } from '../schemas/todo.schema';
 import { Trash } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Badge } from "@/components/ui/badge"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -21,6 +22,7 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { PlusCircle } from 'lucide-react';
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { useRouter } from 'next/navigation';
 
 const Todos = () => {
@@ -32,10 +34,11 @@ const Todos = () => {
     const form = useForm({
         resolver: zodResolver(TodoSchema),
         defaultValues: {
-            content: ""
+            content: "",
+            priority: "1"
         }
     });
-    const fetchTodos = async () => {
+    const fetchTodos = useCallback(async () => {
 
         const requestOptions = {
             cache: 'no-store',
@@ -48,16 +51,17 @@ const Todos = () => {
             const result = await response.json();
             if (result.status === 401) {
                 router.push("/login")
+                return;
             }
             setTodos(result.todos)
         } catch (error) {
             console.error(error);
         }
-    }
+    }, [router])
     useEffect(() => {
         fetchTodos()
 
-    }, [])
+    }, [fetchTodos])
 
     const handleCheckChange = async (id, isCompleted) => {
         const myHeaders = new Headers();
@@ -94,7 +98,7 @@ const Todos = () => {
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
 
-        const raw = JSON.stringify(values);
+        const raw = JSON.stringify({ content: values.content, priority: parseInt(values.priority) });
 
         const requestOptions = {
             cache: 'no-store',
@@ -108,7 +112,7 @@ const Todos = () => {
             setOpen(true)
             const response = await fetch("api/todos/create", requestOptions);
             const data = await response.json();
-            console.log(data.status);
+            console.log(data);
             if (data.status !== 200) {
                 if (Array.isArray(data.field)) {
                     data.field.map((field) => {
@@ -129,6 +133,7 @@ const Todos = () => {
             }
             setOpen(false)
             fetchTodos()
+            form.setValue("content", "")
         } catch (error) {
             console.error(error);
         } finally {
@@ -156,10 +161,15 @@ const Todos = () => {
         };
     }
 
+    function getUncompletedByPriority(priority) {
+        return todos.filter(
+            (todo) => todo.priority === priority && !todo.isCompleted
+        );
+    }
     function sortByPriority(priorities) {
-        return <div className='bg-white/10 backdrop-blur-lg rounded-xl sm:rounded-2xl border border-white/20 shadow-2xl overflow-hidden dark:bg-gray-800/20 dark:border-gray-600/30'>
+        return <div className='bg-white/10 backdrop-blur-lg rounded-xl sm:rounded-2xl border border-black/10 shadow-2xl overflow-hidden dark:bg-gray-800/20 dark:border-gray-600/30'>
             {todos && todos.length > 0 ? (
-                <div className='divide-y divide-white/10 dark:divide-gray-600/20'>
+                <div className='divide-y divide-black/10 dark:divide-gray-600/20'>
                     {todos.filter(todo => priorities.includes(todo.priority)).map(todo => (
                         (showFinished || !todo.isCompleted) && <div
                             key={todo._id}
@@ -175,8 +185,8 @@ const Todos = () => {
 
                             <span
                                 className={`flex-1 text-sm sm:text-base transition-all duration-200 break-words min-w-0 ${todo.isCompleted
-                                    ? 'line-through text-white/50 dark:text-gray-400'
-                                    : 'text-white dark:text-gray-200'
+                                    ? 'line-through text-black/50 dark:text-gray-400'
+                                    : 'text-black dark:text-gray-200'
                                     }`}
                             >
                                 {todo.content}
@@ -213,8 +223,8 @@ const Todos = () => {
                 </div>
             ) : (
                 <div className='px-4 sm:px-6 py-8 sm:py-12 text-center'>
-                    <div className='text-white/60 dark:text-gray-400 text-base sm:text-lg mb-2'>No tasks yet</div>
-                    <p className='text-white/40 dark:text-gray-500 text-sm sm:text-base'>Add your first task to get started!</p>
+                    <div className='text-black/60 dark:text-gray-400 text-base sm:text-lg mb-2'>No tasks yet</div>
+                    <p className='text-balck/40 dark:text-gray-500 text-sm sm:text-base'>Add your first task to get started!</p>
                 </div>
             )}
         </div>
@@ -222,20 +232,19 @@ const Todos = () => {
 
 
     return (
-        <main className='bg-gradient-to-br py-20 from-indigo-500 via-indigo-500 to-pink-500 dark:from-slate-900 dark:via-slate-900 dark:to-slate-950 min-h-screen'>
+        <main className='bg-gradient-to-br py-20 from-white via-white to-white dark:from-slate-900 dark:via-slate-900 dark:to-slate-950 min-h-screen'>
             {/* Header Section */}
             <div className='px-4 sm:px-6 py-4 sm:py-8'>
                 <div className='max-w-4xl mx-auto'>
                     <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4'>
                         <div className='flex-1 min-w-0'>
-                            <h1 className='text-2xl sm:text-3xl lg:text-4xl font-bold text-white dark:text-gray-100 mb-2 break-words'>My Tasks</h1>
-                            <p className='text-sm sm:text-base text-purple-200 dark:text-gray-300'>Stay organized and get things done</p>
+                            <h1 className='text-2xl sm:text-3xl lg:text-4xl font-bold text-neutral-800 dark:text-gray-100 mb-2 break-words'>My Tasks</h1>
+                            <p className='text-sm sm:text-base text-gray-500 dark:text-gray-300'>Stay organized and get things done</p>
                         </div>
                         <div className='w-full sm:w-auto md:mt-10'>
                             <AlertDialog open={open} onOpenChange={setOpen} >
                                 <AlertDialogTrigger asChild >
                                     <Button
-                                        className='w-full sm:w-auto bg-white/20 hover:bg-white/30 text-white border-white/20 backdrop-blur-lg transition-all duration-200 shadow-lg hover:shadow-xl dark:bg-gray-800/50 dark:hover:bg-gray-700/50 dark:border-gray-600/30'
                                         size="lg"
                                     >
                                         <PlusCircle className='mr-2 h-4 w-4 sm:h-5 sm:w-5' />
@@ -247,7 +256,7 @@ const Todos = () => {
                                         <AlertDialogTitle className='text-gray-800 dark:text-gray-100 text-lg sm:text-xl'>Add a New Task</AlertDialogTitle>
                                     </AlertDialogHeader>
                                     <Form {...form}>
-                                        <div onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4 justify-center">
+                                        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4 justify-center">
                                             <FormField
                                                 control={form.control}
                                                 name="content"
@@ -261,14 +270,32 @@ const Todos = () => {
                                                             />
                                                         </FormControl>
                                                         <FormMessage />
+
+                                                    </FormItem>
+                                                )}
+                                            />
+                                            <FormField
+                                                control={form.control}
+                                                name="priority"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormControl>
+                                                            <ToggleGroup type="single" className={"mx-auto"} variant={"outline"} onValueChange={(val) => field.onChange(val)}>
+                                                                <ToggleGroupItem value={1} className={"px-2 dark:hover:bg-slate-700 hover:bg-gray-200 data-[state=on]:bg-gray-300 dark:data-[state=on]:bg-slate-900"}>Low</ToggleGroupItem>
+                                                                <ToggleGroupItem value={2} className={"px-4 dark:hover:bg-slate-700 hover:bg-gray-200 data-[state=on]:bg-gray-300 dark:data-[state=on]:bg-slate-900"}>Medium</ToggleGroupItem>
+                                                                <ToggleGroupItem value={3} className={"px-2 dark:hover:bg-slate-700 hover:bg-gray-200 data-[state=on]:bg-gray-300 dark:data-[state=on]:bg-slate-900"}>High</ToggleGroupItem>
+                                                            </ToggleGroup>
+                                                        </FormControl>
+                                                        <FormMessage />
+
                                                     </FormItem>
                                                 )}
                                             />
                                             <AlertDialogFooter className='flex-col sm:flex-row gap-2'>
                                                 <AlertDialogCancel className='bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white w-full sm:w-auto order-2 sm:order-1'>Cancel</AlertDialogCancel>
-                                                <Button onClick={form.handleSubmit(onSubmit)} className='w-full sm:w-auto order-1 sm:order-2'>Add Task</Button>
+                                                <Button type={"submit"} className='w-full sm:w-auto order-1 sm:order-2'>Add Task</Button>
                                             </AlertDialogFooter>
-                                        </div>
+                                        </form>
                                     </Form>
                                 </AlertDialogContent>
                             </AlertDialog>
@@ -280,17 +307,27 @@ const Todos = () => {
                             onCheckedChange={() => setShowFinished(!showFinished)}
                             className='h-4 w-4 sm:h-5 sm:w-5 bg-white'
                         />
-                        <span className='text-sm sm:text-base text-white/80 dark:text-gray-300'>Show completed tasks</span>
+                        <span className='text-sm sm:text-base text-black/80 dark:text-gray-300'>Show completed tasks</span>
                     </div>
                 </div>
             </div>
 
             {/* Todo List Section */}
-            <Tabs defaultValue="account" className="w-[400px]">
-                <TabsList>
-                    <TabsTrigger value="low">Low</TabsTrigger>
-                    <TabsTrigger value="medium">Medium</TabsTrigger>
-                    <TabsTrigger value="high">High</TabsTrigger>
+            <Tabs defaultValue="all" className="flex justify-center w-[80%] mx-auto">
+                {/* {console.log(todos.filter((todo) => todo.priority === 1).length)} */}
+                <TabsList className={"mx-auto dark:bg-black/20 bg-gray-200/50"}>
+                    <TabsTrigger value="low" className={"flex items-center justify-center"}>Low {(getUncompletedByPriority(1).length !== 0) &&
+                        (<Badge variant={getUncompletedByPriority(1).length ? "destructive" : "default"} className={"rounded-full p-0.5"}>
+                        </Badge>)
+                    }</TabsTrigger>
+                    <TabsTrigger value="medium" className={"flex items-center justify-center"}>Medium {getUncompletedByPriority(2).length !== 0 &&
+                        (<Badge variant={getUncompletedByPriority(2).length ? "destructive" : "default"} className={"rounded-full p-0.5"}>
+                        </Badge>)
+                    }</TabsTrigger>
+                    <TabsTrigger value="high" className={"flex items-center justify-center"}>High {getUncompletedByPriority(3).length !== 0 &&
+                        (<Badge variant={getUncompletedByPriority(3).length ? "destructive" : "default"} className={"rounded-full p-0.5"}>
+                        </Badge>)
+                    }</TabsTrigger>
                     <TabsTrigger value="all">All</TabsTrigger>
                 </TabsList>
                 <TabsContent value="low">{sortByPriority([1])}</TabsContent>
@@ -306,16 +343,16 @@ const Todos = () => {
                     <div className='mt-4 sm:mt-6 flex justify-center'>
                         <div className='bg-white/10 backdrop-blur-lg rounded-lg sm:rounded-xl px-4 sm:px-6 py-2 sm:py-3 border border-white/20 dark:bg-gray-800/20 dark:border-gray-600/30 w-full sm:w-auto'>
                             <div className='flex flex-col sm:flex-row items-center gap-3 sm:gap-6 text-white/80 dark:text-gray-300'>
-                                <span className='text-xs sm:text-sm'>
-                                    Total: <span className='font-semibold text-white dark:text-gray-100'>{showFinished ? todos.length : todos.filter(t => !t.isCompleted).length}</span>
+                                <span className='text-xs sm:text-sm text-black dark:text-white'>
+                                    Total: <span className='font-semibold text-black dark:text-gray-100'>{showFinished ? todos.length : todos.filter(t => !t.isCompleted).length}</span>
                                 </span>
                                 {showFinished &&
 
-                                    <span className='text-xs sm:text-sm'>
+                                    <span className='text-xs sm:text-sm text-black dark:text-white'>
                                         Completed: <span className='font-semibold text-green-400 dark:text-green-300'>{todos.filter(t => t.isCompleted).length}</span>
                                     </span>
                                 }
-                                <span className='text-xs sm:text-sm'>
+                                <span className='text-xs sm:text-sm text-black dark:text-white'>
                                     Remaining: <span className='font-semibold text-orange-400 dark:text-orange-300'>{todos.filter(t => !t.isCompleted).length}</span>
                                 </span>
                             </div>
