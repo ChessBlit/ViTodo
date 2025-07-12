@@ -23,7 +23,7 @@
 ## Setup
 
 ```bash
-git clone https://github.com/your-username/vitodo.git
+git clone https://github.com/ChessBlit/ViTodo.git
 cd vitodo
 npm install
 npm run dev
