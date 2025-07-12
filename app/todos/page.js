@@ -94,7 +94,6 @@ const Todos = () => {
     }
 
     async function onSubmit(values) {
-        console.log(values);
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
 
@@ -112,7 +111,6 @@ const Todos = () => {
             setOpen(true)
             const response = await fetch("api/todos/create", requestOptions);
             const data = await response.json();
-            console.log(data);
             if (data.status !== 200) {
                 if (Array.isArray(data.field)) {
                     data.field.map((field) => {
@@ -157,7 +155,7 @@ const Todos = () => {
             setTimeout(() => {
                 setDisabled(false)
 
-            }, 300);
+            }, 500);
         };
     }
 
@@ -314,7 +312,6 @@ const Todos = () => {
 
             {/* Todo List Section */}
             <Tabs defaultValue="all" className="flex justify-center w-[80%] mx-auto">
-                {/* {console.log(todos.filter((todo) => todo.priority === 1).length)} */}
                 <TabsList className={"mx-auto dark:bg-black/20 bg-gray-200/50"}>
                     <TabsTrigger value="low" className={"flex items-center justify-center"}>Low {(getUncompletedByPriority(1).length !== 0) &&
                         (<Badge variant={getUncompletedByPriority(1).length ? "destructive" : "default"} className={"rounded-full p-0.5"}>

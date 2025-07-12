@@ -11,7 +11,6 @@ export async function POST(req) {
     try {
         await connectDB();
         const { content, priority } = await req.json();
-        console.log(content, priority);
         const cookieMonster = await cookies();
         const refreshToken = cookieMonster.get("refreshToken")?.value;
 

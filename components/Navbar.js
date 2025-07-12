@@ -36,7 +36,6 @@ const Navbar = () => {
         try {
             const response = await fetch("/api/users/state", requestOptions);
             const result = await response.json();
-            console.log(result.loggedIn);
             setLoggedIn(result.loggedIn)
             return result.loggedIn
 
