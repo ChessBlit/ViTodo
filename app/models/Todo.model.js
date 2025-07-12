@@ -20,6 +20,11 @@ const TodoSchema = new Schema(
             required: true,
             default: false,
             index: true
+        },
+        priority: {
+            type: Number,
+            required: true,
+            default: 1,
         }
     },
     { timestamps: true }

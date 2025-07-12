@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { TodoSchema } from '../schemas/todo.schema';
 import { Trash } from 'lucide-react';
-import { Separator } from "@/components/ui/separator"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -156,6 +156,70 @@ const Todos = () => {
         };
     }
 
+    function sortByPriority(priorities) {
+        return <div className='bg-white/10 backdrop-blur-lg rounded-xl sm:rounded-2xl border border-white/20 shadow-2xl overflow-hidden dark:bg-gray-800/20 dark:border-gray-600/30'>
+            {todos && todos.length > 0 ? (
+                <div className='divide-y divide-white/10 dark:divide-gray-600/20'>
+                    {todos.filter(todo => priorities.includes(todo.priority)).map(todo => (
+                        (showFinished || !todo.isCompleted) && <div
+                            key={todo._id}
+                            className={`flex items-center gap-3 sm:gap-4 px-4 sm:px-6 py-3 sm:py-4 transition-all duration-200 hover:bg-white/5 dark:hover:bg-gray-700/20 ${todo.isCompleted ? 'opacity-60' : ''
+                                }`}
+                        >
+                            <Checkbox
+                                disabled={disabled}
+                                checked={todo.isCompleted}
+                                onCheckedChange={() => { handleCheckChange(todo._id, !todo.isCompleted) }}
+                                className='data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500 dark:border-gray-500 dark:data-[state=checked]:bg-green-600 dark:data-[state=checked]:border-green-600 h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0'
+                            />
+
+                            <span
+                                className={`flex-1 text-sm sm:text-base transition-all duration-200 break-words min-w-0 ${todo.isCompleted
+                                    ? 'line-through text-white/50 dark:text-gray-400'
+                                    : 'text-white dark:text-gray-200'
+                                    }`}
+                            >
+                                {todo.content}
+                            </span>
+                            <AlertDialog>
+                                <AlertDialogTrigger
+                                    disabled={disabled}
+                                    variant="ghost"
+                                    size="sm"
+                                    className='text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all duration-200 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-500/20 flex-shrink-0 h-8 w-8 sm:h-9 sm:w-9 p-0 flex justify-center items-center rounded-md'
+                                >
+
+                                    <Trash className='h-3 w-3 sm:h-4 sm:w-4' />
+
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle >Are you absolutely sure?</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            This action cannot be undone. Are you sure to delete the todo named &quot;{todo.content}&quot;
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <AlertDialogAction
+                                            onClick={() => handleDelete(todo._id)}
+                                        >Continue</AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                <div className='px-4 sm:px-6 py-8 sm:py-12 text-center'>
+                    <div className='text-white/60 dark:text-gray-400 text-base sm:text-lg mb-2'>No tasks yet</div>
+                    <p className='text-white/40 dark:text-gray-500 text-sm sm:text-base'>Add your first task to get started!</p>
+                </div>
+            )}
+        </div>
+    }
+
 
     return (
         <main className='bg-gradient-to-br py-20 from-indigo-500 via-indigo-500 to-pink-500 dark:from-slate-900 dark:via-slate-900 dark:to-slate-950 min-h-screen'>
@@ -222,68 +286,20 @@ const Todos = () => {
             </div>
 
             {/* Todo List Section */}
+            <Tabs defaultValue="account" className="w-[400px]">
+                <TabsList>
+                    <TabsTrigger value="low">Low</TabsTrigger>
+                    <TabsTrigger value="medium">Medium</TabsTrigger>
+                    <TabsTrigger value="high">High</TabsTrigger>
+                    <TabsTrigger value="all">All</TabsTrigger>
+                </TabsList>
+                <TabsContent value="low">{sortByPriority([1])}</TabsContent>
+                <TabsContent value="medium">{sortByPriority([2])}</TabsContent>
+                <TabsContent value="high">{sortByPriority([3])}</TabsContent>
+                <TabsContent value="all">{sortByPriority([1, 2, 3])}</TabsContent>
+            </Tabs>
             <div className="todos max-w-4xl mx-auto px-4 sm:px-6 pb-6 sm:pb-8">
-                <div className='bg-white/10 backdrop-blur-lg rounded-xl sm:rounded-2xl border border-white/20 shadow-2xl overflow-hidden dark:bg-gray-800/20 dark:border-gray-600/30'>
-                    {todos && todos.length > 0 ? (
-                        <div className='divide-y divide-white/10 dark:divide-gray-600/20'>
-                            {todos.map(todo => (
-                                (showFinished || !todo.isCompleted) && <div
-                                    key={todo._id}
-                                    className={`flex items-center gap-3 sm:gap-4 px-4 sm:px-6 py-3 sm:py-4 transition-all duration-200 hover:bg-white/5 dark:hover:bg-gray-700/20 ${todo.isCompleted ? 'opacity-60' : ''
-                                        }`}
-                                >
-                                    <Checkbox
-                                        disabled={disabled}
-                                        checked={todo.isCompleted}
-                                        onCheckedChange={() => { handleCheckChange(todo._id, !todo.isCompleted) }}
-                                        className='data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500 dark:border-gray-500 dark:data-[state=checked]:bg-green-600 dark:data-[state=checked]:border-green-600 h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0'
-                                    />
 
-                                    <span
-                                        className={`flex-1 text-sm sm:text-base transition-all duration-200 break-words min-w-0 ${todo.isCompleted
-                                            ? 'line-through text-white/50 dark:text-gray-400'
-                                            : 'text-white dark:text-gray-200'
-                                            }`}
-                                    >
-                                        {todo.content}
-                                    </span>
-                                    <AlertDialog>
-                                        <AlertDialogTrigger
-                                            disabled={disabled}
-                                            variant="ghost"
-                                            size="sm"
-                                            className='text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all duration-200 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-500/20 flex-shrink-0 h-8 w-8 sm:h-9 sm:w-9 p-0 flex justify-center items-center rounded-md'
-                                        >
-
-                                            <Trash className='h-3 w-3 sm:h-4 sm:w-4' />
-
-                                        </AlertDialogTrigger>
-                                        <AlertDialogContent>
-                                            <AlertDialogHeader>
-                                                <AlertDialogTitle >Are you absolutely sure?</AlertDialogTitle>
-                                                <AlertDialogDescription>
-                                                    This action cannot be undone. Are you sure to delete the todo named &quot;{todo.content}&quot;
-                                                </AlertDialogDescription>
-                                            </AlertDialogHeader>
-                                            <AlertDialogFooter>
-                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                <AlertDialogAction
-                                                    onClick={() => handleDelete(todo._id)}
-                                                >Continue</AlertDialogAction>
-                                            </AlertDialogFooter>
-                                        </AlertDialogContent>
-                                    </AlertDialog>
-
-                                </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <div className='px-4 sm:px-6 py-8 sm:py-12 text-center'>
-                            <div className='text-white/60 dark:text-gray-400 text-base sm:text-lg mb-2'>No tasks yet</div>
-                            <p className='text-white/40 dark:text-gray-500 text-sm sm:text-base'>Add your first task to get started!</p>
-                        </div>
-                    )}
-                </div>
 
                 {/* Stats Section */}
                 {todos && todos.length > 0 && (

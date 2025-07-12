@@ -10,14 +10,14 @@ import { treeifyError } from "zod";
 export async function POST(req) {
     try {
         await connectDB();
-        const { content } = await req.json();
+        const { content, priority } = await req.json();
         const cookieMonster = await cookies();
         const refreshToken = cookieMonster.get("refreshToken")?.value;
 
 
         if (!refreshToken) throw new ApiError(401, "User is not Logged in");
 
-        const checkContent = TodoSchema.safeParse({ content })
+        const checkContent = TodoSchema.safeParse({ content, priority })
 
         if (!checkContent.success) throw new ApiError(400, treeifyError(checkContent.error))
 
@@ -37,6 +37,7 @@ export async function POST(req) {
         const todo = await Todo.create({
             content,
             owner: user._id,
+            priority
         });
 
         user.todos.push(todo._id);
