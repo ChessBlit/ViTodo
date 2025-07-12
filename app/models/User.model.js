@@ -26,11 +26,15 @@ const userSchema = new Schema(
             },
         ],
         refreshToken: {
-            type: String
+            type: String,
+            unique: true,
+            index: true
         }
     },
     { timestamps: true }
 );
+
+userSchema.index({ todos: 1 });
 
 userSchema.pre("save", async function (next) {
     if (!this.isModified("password")) return next();

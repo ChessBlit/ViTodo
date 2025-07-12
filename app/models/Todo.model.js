@@ -19,6 +19,7 @@ const TodoSchema = new Schema(
             type: Boolean,
             required: true,
             default: false,
+            index: true
         },
         priority: {
             type: Number,
