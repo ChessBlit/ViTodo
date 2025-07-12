@@ -14,14 +14,17 @@ import {
     AlertDialogAction,
     AlertDialogCancel,
     AlertDialogContent,
+    AlertDialogDescription,
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { PlusCircle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 const Todos = () => {
+    const router = useRouter();
     const [todos, setTodos] = useState([])
     const [open, setOpen] = useState(false)
     const [disabled, setDisabled] = useState(false)
@@ -43,6 +46,9 @@ const Todos = () => {
         try {
             const response = await fetch("/api/todos/getAll", requestOptions);
             const result = await response.json();
+            if (result.status === 401) {
+                router.push("/login")
+            }
             setTodos(result.todos)
         } catch (error) {
             console.error(error);
@@ -152,7 +158,7 @@ const Todos = () => {
 
 
     return (
-        <main className='bg-gradient-to-br py-6 sm:py-12 from-indigo-900 via-indigo-900 to-pink-900 dark:from-slate-900 dark:via-slate-900 dark:to-slate-950 min-h-screen'>
+        <main className='bg-gradient-to-br py-20 from-indigo-500 via-indigo-500 to-pink-500 dark:from-slate-900 dark:via-slate-900 dark:to-slate-950 min-h-screen'>
             {/* Header Section */}
             <div className='px-4 sm:px-6 py-4 sm:py-8'>
                 <div className='max-w-4xl mx-auto'>
@@ -161,9 +167,9 @@ const Todos = () => {
                             <h1 className='text-2xl sm:text-3xl lg:text-4xl font-bold text-white dark:text-gray-100 mb-2 break-words'>My Tasks</h1>
                             <p className='text-sm sm:text-base text-purple-200 dark:text-gray-300'>Stay organized and get things done</p>
                         </div>
-                        <div className='w-full sm:w-auto'>
-                            <AlertDialog open={open} onOpenChange={setOpen}>
-                                <AlertDialogTrigger asChild>
+                        <div className='w-full sm:w-auto md:mt-10'>
+                            <AlertDialog open={open} onOpenChange={setOpen} >
+                                <AlertDialogTrigger asChild >
                                     <Button
                                         className='w-full sm:w-auto bg-white/20 hover:bg-white/30 text-white border-white/20 backdrop-blur-lg transition-all duration-200 shadow-lg hover:shadow-xl dark:bg-gray-800/50 dark:hover:bg-gray-700/50 dark:border-gray-600/30'
                                         size="lg"
@@ -194,7 +200,7 @@ const Todos = () => {
                                                     </FormItem>
                                                 )}
                                             />
-                                            <AlertDialogFooter className='flex-col sm:flex-row gap-2 sm:gap-0'>
+                                            <AlertDialogFooter className='flex-col sm:flex-row gap-2'>
                                                 <AlertDialogCancel className='bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white w-full sm:w-auto order-2 sm:order-1'>Cancel</AlertDialogCancel>
                                                 <Button onClick={form.handleSubmit(onSubmit)} className='w-full sm:w-auto order-1 sm:order-2'>Add Task</Button>
                                             </AlertDialogFooter>
@@ -208,7 +214,7 @@ const Todos = () => {
                         <Checkbox
                             checked={showFinished}
                             onCheckedChange={() => setShowFinished(!showFinished)}
-                            className='h-4 w-4 sm:h-5 sm:w-5'
+                            className='h-4 w-4 sm:h-5 sm:w-5 bg-white'
                         />
                         <span className='text-sm sm:text-base text-white/80 dark:text-gray-300'>Show completed tasks</span>
                     </div>
@@ -235,22 +241,39 @@ const Todos = () => {
 
                                     <span
                                         className={`flex-1 text-sm sm:text-base transition-all duration-200 break-words min-w-0 ${todo.isCompleted
-                                                ? 'line-through text-white/50 dark:text-gray-400'
-                                                : 'text-white dark:text-gray-200'
+                                            ? 'line-through text-white/50 dark:text-gray-400'
+                                            : 'text-white dark:text-gray-200'
                                             }`}
                                     >
                                         {todo.content}
                                     </span>
+                                    <AlertDialog>
+                                        <AlertDialogTrigger
+                                            disabled={disabled}
+                                            variant="ghost"
+                                            size="sm"
+                                            className='text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all duration-200 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-500/20 flex-shrink-0 h-8 w-8 sm:h-9 sm:w-9 p-0 flex justify-center items-center rounded-md'
+                                        >
 
-                                    <Button
-                                        onClick={() => handleDelete(todo._id)}
-                                        disabled={disabled}
-                                        variant="ghost"
-                                        size="sm"
-                                        className='text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all duration-200 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-500/20 flex-shrink-0 h-8 w-8 sm:h-9 sm:w-9 p-0'
-                                    >
-                                        <Trash className='h-3 w-3 sm:h-4 sm:w-4' />
-                                    </Button>
+                                            <Trash className='h-3 w-3 sm:h-4 sm:w-4' />
+
+                                        </AlertDialogTrigger>
+                                        <AlertDialogContent>
+                                            <AlertDialogHeader>
+                                                <AlertDialogTitle >Are you absolutely sure?</AlertDialogTitle>
+                                                <AlertDialogDescription>
+                                                    This action cannot be undone. Are you sure to delete the todo named &quot;{todo.content}&quot;
+                                                </AlertDialogDescription>
+                                            </AlertDialogHeader>
+                                            <AlertDialogFooter>
+                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                <AlertDialogAction
+                                                    onClick={() => handleDelete(todo._id)}
+                                                >Continue</AlertDialogAction>
+                                            </AlertDialogFooter>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
+
                                 </div>
                             ))}
                         </div>
@@ -268,9 +291,9 @@ const Todos = () => {
                         <div className='bg-white/10 backdrop-blur-lg rounded-lg sm:rounded-xl px-4 sm:px-6 py-2 sm:py-3 border border-white/20 dark:bg-gray-800/20 dark:border-gray-600/30 w-full sm:w-auto'>
                             <div className='flex flex-col sm:flex-row items-center gap-3 sm:gap-6 text-white/80 dark:text-gray-300'>
                                 <span className='text-xs sm:text-sm'>
-                                    Total: <span className='font-semibold text-white dark:text-gray-100'>{showFinished ? todos.length : todos.filter(t=>!t.isCompleted).length}</span>
+                                    Total: <span className='font-semibold text-white dark:text-gray-100'>{showFinished ? todos.length : todos.filter(t => !t.isCompleted).length}</span>
                                 </span>
-                                { showFinished &&
+                                {showFinished &&
 
                                     <span className='text-xs sm:text-sm'>
                                         Completed: <span className='font-semibold text-green-400 dark:text-green-300'>{todos.filter(t => t.isCompleted).length}</span>
