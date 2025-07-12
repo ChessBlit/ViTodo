@@ -25,7 +25,7 @@ const Todos = () => {
     const [todos, setTodos] = useState([])
     const [open, setOpen] = useState(false)
     const [disabled, setDisabled] = useState(false)
-    const [showFinished, setShowFinished] = useState(false)
+    const [showFinished, setShowFinished] = useState(true)
     const form = useForm({
         resolver: zodResolver(TodoSchema),
         defaultValues: {
@@ -114,7 +114,7 @@ const Todos = () => {
                     return;
 
                 }
-                
+
                 form.setError(data.field, {
                     type: "manual",
                     message: data.message,
@@ -152,120 +152,131 @@ const Todos = () => {
 
 
     return (
-        <main className='bg-gradient-to-br py-12 from-indigo-900 via-indigo-900 to-pink-900 dark:from-slate-900 dark:via-slate-900 dark:to-slate-950 min-h-screen'>
+        <main className='bg-gradient-to-br py-6 sm:py-12 from-indigo-900 via-indigo-900 to-pink-900 dark:from-slate-900 dark:via-slate-900 dark:to-slate-950 min-h-screen'>
             {/* Header Section */}
-            <div className='px-6 py-8'>
+            <div className='px-4 sm:px-6 py-4 sm:py-8'>
                 <div className='max-w-4xl mx-auto'>
-                    <div className='flex items-center justify-between mb-8'>
-                        <div>
-                            <h1 className='text-4xl font-bold text-white dark:text-gray-100 mb-2'>My Tasks</h1>
-                            <p className='text-purple-200 dark:text-gray-300'>Stay organized and get things done</p>
+                    <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4'>
+                        <div className='flex-1 min-w-0'>
+                            <h1 className='text-2xl sm:text-3xl lg:text-4xl font-bold text-white dark:text-gray-100 mb-2 break-words'>My Tasks</h1>
+                            <p className='text-sm sm:text-base text-purple-200 dark:text-gray-300'>Stay organized and get things done</p>
                         </div>
-                        <AlertDialog open={open} onOpenChange={setOpen}>
-                            <AlertDialogTrigger asChild>
-                                <Button 
-                                    className='bg-white/20 hover:bg-white/30 text-white border-white/20 backdrop-blur-lg transition-all duration-200 shadow-lg hover:shadow-xl dark:bg-gray-800/50 dark:hover:bg-gray-700/50 dark:border-gray-600/30'
-                                    size="lg"
-                                >
-                                    <PlusCircle className='mr-2 h-5 w-5' />
-                                    Add Task
-                                </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent className='bg-white/95 backdrop-blur-xl border-white/20 dark:bg-gray-800/95 dark:border-gray-600/30'>
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle className='text-gray-800 dark:text-gray-100'>Add a New Task</AlertDialogTitle>
-                                </AlertDialogHeader>
-                                <Form {...form}>
-                                    <div onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4 justify-center">
-                                        <FormField
-                                            control={form.control}
-                                            name="content"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormControl>
-                                                        <Input 
-                                                            placeholder="What needs to be done?" 
-                                                            className="w-full bg-white/80 border-gray-200 focus:border-purple-500 focus:ring-purple-500 dark:bg-gray-700/80 dark:border-gray-600 dark:focus:border-purple-400 dark:text-white dark:placeholder-gray-400" 
-                                                            {...field} 
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <AlertDialogFooter>
-                                            <AlertDialogCancel className='bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white'>Cancel</AlertDialogCancel>
-                                            <Button onClick={form.handleSubmit(onSubmit)}>Add Task</Button>
-                                        </AlertDialogFooter>
-                                    </div>
-                                </Form>
-                            </AlertDialogContent>
-                        </AlertDialog>
+                        <div className='w-full sm:w-auto'>
+                            <AlertDialog open={open} onOpenChange={setOpen}>
+                                <AlertDialogTrigger asChild>
+                                    <Button
+                                        className='w-full sm:w-auto bg-white/20 hover:bg-white/30 text-white border-white/20 backdrop-blur-lg transition-all duration-200 shadow-lg hover:shadow-xl dark:bg-gray-800/50 dark:hover:bg-gray-700/50 dark:border-gray-600/30'
+                                        size="lg"
+                                    >
+                                        <PlusCircle className='mr-2 h-4 w-4 sm:h-5 sm:w-5' />
+                                        <span className='text-sm sm:text-base'>Add Task</span>
+                                    </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent className='bg-white/95 backdrop-blur-xl border-white/20 dark:bg-gray-800/95 dark:border-gray-600/30 w-[95vw] max-w-md mx-auto'>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle className='text-gray-800 dark:text-gray-100 text-lg sm:text-xl'>Add a New Task</AlertDialogTitle>
+                                    </AlertDialogHeader>
+                                    <Form {...form}>
+                                        <div onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4 justify-center">
+                                            <FormField
+                                                control={form.control}
+                                                name="content"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormControl>
+                                                            <Input
+                                                                placeholder="What needs to be done?"
+                                                                className="w-full bg-white/80 border-gray-200 focus:border-purple-500 focus:ring-purple-500 dark:bg-gray-700/80 dark:border-gray-600 dark:focus:border-purple-400 dark:text-white dark:placeholder-gray-400 text-sm sm:text-base"
+                                                                {...field}
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                            <AlertDialogFooter className='flex-col sm:flex-row gap-2 sm:gap-0'>
+                                                <AlertDialogCancel className='bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white w-full sm:w-auto order-2 sm:order-1'>Cancel</AlertDialogCancel>
+                                                <Button onClick={form.handleSubmit(onSubmit)} className='w-full sm:w-auto order-1 sm:order-2'>Add Task</Button>
+                                            </AlertDialogFooter>
+                                        </div>
+                                    </Form>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                        </div>
+                    </div>
+                    <div className='flex items-center gap-2 sm:gap-3'>
+                        <Checkbox
+                            checked={showFinished}
+                            onCheckedChange={() => setShowFinished(!showFinished)}
+                            className='h-4 w-4 sm:h-5 sm:w-5'
+                        />
+                        <span className='text-sm sm:text-base text-white/80 dark:text-gray-300'>Show completed tasks</span>
                     </div>
                 </div>
             </div>
 
             {/* Todo List Section */}
-            <div className="todos max-w-4xl mx-auto px-6 pb-8">
-                <div className='bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 shadow-2xl overflow-hidden dark:bg-gray-800/20 dark:border-gray-600/30'>
+            <div className="todos max-w-4xl mx-auto px-4 sm:px-6 pb-6 sm:pb-8">
+                <div className='bg-white/10 backdrop-blur-lg rounded-xl sm:rounded-2xl border border-white/20 shadow-2xl overflow-hidden dark:bg-gray-800/20 dark:border-gray-600/30'>
                     {todos && todos.length > 0 ? (
                         <div className='divide-y divide-white/10 dark:divide-gray-600/20'>
                             {todos.map(todo => (
-                                <div
-                                    key={todo._id} 
-                                    className={`flex items-center gap-4 px-6 py-4 transition-all duration-200 hover:bg-white/5 dark:hover:bg-gray-700/20 ${
-                                        todo.isCompleted ? 'opacity-60' : ''
-                                    }`}
-                                >
-                                    <Checkbox 
-                                        disabled={disabled} 
-                                        checked={todo.isCompleted} 
-                                        onCheckedChange={() => { handleCheckChange(todo._id, !todo.isCompleted) }}
-                                        className='data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500 dark:border-gray-500 dark:data-[state=checked]:bg-green-600 dark:data-[state=checked]:border-green-600'
-                                    />
-                                    
-                                    <span 
-                                        className={`flex-1 text-white transition-all duration-200 dark:text-gray-200 ${
-                                            todo.isCompleted 
-                                                ? 'line-through text-white/50 dark:text-gray-400' 
-                                                : 'text-white dark:text-gray-200'
+                                (showFinished || !todo.isCompleted) && <div
+                                    key={todo._id}
+                                    className={`flex items-center gap-3 sm:gap-4 px-4 sm:px-6 py-3 sm:py-4 transition-all duration-200 hover:bg-white/5 dark:hover:bg-gray-700/20 ${todo.isCompleted ? 'opacity-60' : ''
                                         }`}
+                                >
+                                    <Checkbox
+                                        disabled={disabled}
+                                        checked={todo.isCompleted}
+                                        onCheckedChange={() => { handleCheckChange(todo._id, !todo.isCompleted) }}
+                                        className='data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500 dark:border-gray-500 dark:data-[state=checked]:bg-green-600 dark:data-[state=checked]:border-green-600 h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0'
+                                    />
+
+                                    <span
+                                        className={`flex-1 text-sm sm:text-base transition-all duration-200 break-words min-w-0 ${todo.isCompleted
+                                                ? 'line-through text-white/50 dark:text-gray-400'
+                                                : 'text-white dark:text-gray-200'
+                                            }`}
                                     >
                                         {todo.content}
                                     </span>
-                                    
-                                    <Button 
-                                        onClick={() => handleDelete(todo._id)} 
-                                        disabled={disabled} 
+
+                                    <Button
+                                        onClick={() => handleDelete(todo._id)}
+                                        disabled={disabled}
                                         variant="ghost"
                                         size="sm"
-                                        className='text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all duration-200 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-500/20'
+                                        className='text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all duration-200 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-500/20 flex-shrink-0 h-8 w-8 sm:h-9 sm:w-9 p-0'
                                     >
-                                        <Trash className='h-4 w-4' />
+                                        <Trash className='h-3 w-3 sm:h-4 sm:w-4' />
                                     </Button>
                                 </div>
                             ))}
                         </div>
                     ) : (
-                        <div className='px-6 py-12 text-center'>
-                            <div className='text-white/60 dark:text-gray-400 text-lg mb-2'>No tasks yet</div>
-                            <p className='text-white/40 dark:text-gray-500'>Add your first task to get started!</p>
+                        <div className='px-4 sm:px-6 py-8 sm:py-12 text-center'>
+                            <div className='text-white/60 dark:text-gray-400 text-base sm:text-lg mb-2'>No tasks yet</div>
+                            <p className='text-white/40 dark:text-gray-500 text-sm sm:text-base'>Add your first task to get started!</p>
                         </div>
                     )}
                 </div>
-                
+
                 {/* Stats Section */}
-                {todos && todos.length > 0 && (
-                    <div className='mt-6 flex justify-center'>
-                        <div className='bg-white/10 backdrop-blur-lg rounded-xl px-6 py-3 border border-white/20 dark:bg-gray-800/20 dark:border-gray-600/30'>
-                            <div className='flex items-center gap-6 text-white/80 dark:text-gray-300'>
-                                <span className='text-sm'>
-                                    Total: <span className='font-semibold text-white dark:text-gray-100'>{todos.length}</span>
+                { todos && todos.length > 0 && (
+                    <div className='mt-4 sm:mt-6 flex justify-center'>
+                        <div className='bg-white/10 backdrop-blur-lg rounded-lg sm:rounded-xl px-4 sm:px-6 py-2 sm:py-3 border border-white/20 dark:bg-gray-800/20 dark:border-gray-600/30 w-full sm:w-auto'>
+                            <div className='flex flex-col sm:flex-row items-center gap-3 sm:gap-6 text-white/80 dark:text-gray-300'>
+                                <span className='text-xs sm:text-sm'>
+                                    Total: <span className='font-semibold text-white dark:text-gray-100'>{showFinished ? todos.length : todos.filter(t=>!t.isCompleted).length}</span>
                                 </span>
-                                <span className='text-sm'>
-                                    Completed: <span className='font-semibold text-green-400 dark:text-green-300'>{todos.filter(t => t.isCompleted).length}</span>
-                                </span>
-                                <span className='text-sm'>
+                                { showFinished &&
+
+                                    <span className='text-xs sm:text-sm'>
+                                        Completed: <span className='font-semibold text-green-400 dark:text-green-300'>{todos.filter(t => t.isCompleted).length}</span>
+                                    </span>
+                                }
+                                <span className='text-xs sm:text-sm'>
                                     Remaining: <span className='font-semibold text-orange-400 dark:text-orange-300'>{todos.filter(t => !t.isCompleted).length}</span>
                                 </span>
                             </div>
