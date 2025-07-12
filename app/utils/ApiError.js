@@ -24,8 +24,8 @@ class ApiError extends Error {
                 message: this.message,
                 field: this.field,
                 errors: this.errors,
+                status: this.status
             },
-            { status: this.status }
         );
     }
 }

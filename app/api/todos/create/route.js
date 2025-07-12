@@ -8,42 +8,58 @@ import { TodoSchema } from "@/app/schemas/todo.schema";
 import { treeifyError } from "zod";
 
 export async function POST(req) {
-    await connectDB();
-    const { content } = await req.json();
-    const cookieMonster = await cookies();
-    const refreshToken = cookieMonster.get("refreshToken")?.value;
-    
-    
-    if (!refreshToken) throw new ApiError(401, "User is not Logged in");
-    
-    const checkContent = TodoSchema.safeParse({content})
+    try {
+        await connectDB();
+        const { content } = await req.json();
+        const cookieMonster = await cookies();
+        const refreshToken = cookieMonster.get("refreshToken")?.value;
 
-    if (!checkContent.success) throw new ApiError(400, treeifyError(checkContent.error))
 
-    const user = await User.findOne({
-        refreshToken,
-    });
+        if (!refreshToken) throw new ApiError(401, "User is not Logged in");
 
-    if (!user) throw new ApiError(401, "Invalid session or user not found");
+        const checkContent = TodoSchema.safeParse({ content })
 
-    const alreadyExists = await Todo.findOne({
-        content,
-        owner: user._id,
-    });
+        if (!checkContent.success) throw new ApiError(400, treeifyError(checkContent.error))
 
-    if (alreadyExists) throw new ApiError(409, "Todo already exists");
+        const user = await User.findOne({
+            refreshToken,
+        });
 
-    const todo = await Todo.create({
-        content,
-        owner: user._id,
-    });
+        if (!user) throw new ApiError(401, "Invalid session or user not found");
 
-    user.todos.push(todo._id);
-    await user.save();
+        const alreadyExists = await Todo.findOne({
+            content,
+            owner: user._id,
+        });
 
-    return NextResponse.json({
-        status: 201,
-        message: "Todo Created Successfully",
-        todo,
-    });
+        if (alreadyExists) throw new ApiError(409, "Todo already exists", "content");
+
+        const todo = await Todo.create({
+            content,
+            owner: user._id,
+        });
+
+        user.todos.push(todo._id);
+        await user.save();
+
+        return NextResponse.json({
+            status: 200,
+            message: "Todo Created Successfully",
+            todo,
+        });
+    }
+    catch (error) {
+        if (error instanceof ApiError) {
+            return error.toNextResponse();
+        }
+
+        return NextResponse.json(
+            {
+                success: false,
+                message: "Internal Server Error",
+            },
+            { status: 500 }
+        );
+
+    }
 }

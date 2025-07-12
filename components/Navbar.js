@@ -14,8 +14,8 @@ import Link from "next/link";
 const Navbar = () => {
     const { setTheme } = useTheme();
 
-    return <nav className="flex sticky gap-2 justify-around py-4 items-center  w-full backdrop-blur-sm dark:bg-slate-900/50 bg-white/50">
-        <Link href={"/"}><div className="logo font-bold text-2xl">ViTodo</div></Link>
+    return <nav className="flex fixed gap-2 justify-around py-4 items-center w-full backdrop-blur-sm dark:bg-black/10 bg-white/30">
+        <Link href={"/"}><div className="logo font-bold text-2xl dark:text-white text-white">ViTodo</div></Link>
 
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
