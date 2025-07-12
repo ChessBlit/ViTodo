@@ -263,7 +263,7 @@ const Todos = () => {
                 </div>
 
                 {/* Stats Section */}
-                { todos && todos.length > 0 && (
+                {todos && todos.length > 0 && (
                     <div className='mt-4 sm:mt-6 flex justify-center'>
                         <div className='bg-white/10 backdrop-blur-lg rounded-lg sm:rounded-xl px-4 sm:px-6 py-2 sm:py-3 border border-white/20 dark:bg-gray-800/20 dark:border-gray-600/30 w-full sm:w-auto'>
                             <div className='flex flex-col sm:flex-row items-center gap-3 sm:gap-6 text-white/80 dark:text-gray-300'>
