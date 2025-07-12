@@ -1,0 +1,18 @@
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#8B5CF6" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="128" height="128" rx="24" fill="url(#grad)" />
+
+  <!-- Stylish Vi -->
+  <text x="50%" y="56%" dominant-baseline="middle" text-anchor="middle"
+        font-family="'Georgia', 'Times New Roman', serif"
+        font-size="75" fill="white" font-weight="bold" letter-spacing="1">
+    Vi
+  </text>
+</svg>
