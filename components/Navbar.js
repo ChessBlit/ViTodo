@@ -47,8 +47,7 @@ const Navbar = () => {
     useEffect(() => {
       getLoginState()
     
-    }, [])
-    
+    }, [])    
 
     return <nav className="flex z-50 fixed gap-2 justify-around py-4 items-center w-full backdrop-blur-sm dark:bg-black/10 bg-white/30">
         <Link href={"/home"}><div className="logo font-bold text-2xl dark:text-white text-white">ViTodo</div></Link>

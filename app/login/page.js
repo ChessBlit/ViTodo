@@ -53,7 +53,6 @@ const Page = () => {
                 });
                 return;
             }
-
             router.push("/todos")
 
 
